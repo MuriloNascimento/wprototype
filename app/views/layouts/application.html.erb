@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Wprototype</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag 'material-icons', media: 'all' %>
+    <%= stylesheet_link_tag 'roboto-font', media: 'all' %>
+    <%= stylesheet_link_tag 'main', media: 'all' %>
+  </head>
+
+  <body>
+    <div id="vue-app">
+      <%= yield %>
+    </div>
+    <%= javascript_include_tag 'main', type: "text/javascript" %>
+  </body>
+</html>
