@@ -3,8 +3,8 @@
 	"version": "1.0.0",
 	"description": "",
 	"scripts": {
-		"build": "webpack --mode production",
-		"start": "webpack serve --mode development"
+		"build": "webpack --progress --mode production",
+		"start": "webpack serve --progress --mode development"
 	},
 	"keywords": [],
 	"author": "murilo.nascimento@nhs.com.br",

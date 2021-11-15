@@ -3,7 +3,9 @@ namespace :webpack do
     task(:build) { sh "npm run build --prefix app/javascript/" }
   
     desc "Start webpack dev server"
-    task(:start) { sh "npm run start --prefix app/javascript/" }
+    task(:start) do
+        sh "npm run start --prefix app/javascript/" 
+    end
 
     desc "Install node packages"
     task(:install) { sh "npm install --prefix app/javascript/" }

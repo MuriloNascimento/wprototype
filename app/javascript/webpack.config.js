@@ -3,6 +3,7 @@ const { VueLoaderPlugin } = require("vue-loader")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 const webpack = require('webpack')
+const TerserPlugin = require("terser-webpack-plugin")
 
 module.exports = {
 	entry: {
@@ -68,6 +69,18 @@ module.exports = {
 	performance : {
 		hints : false
 	},
+	optimization: {
+		moduleIds: 'deterministic',
+		chunkIds: 'named',
+		concatenateModules: true,
+		innerGraph: false,
+		mangleExports: true,
+		mangleWasmImports: true,
+		mergeDuplicateChunks: true,
+		minimize: true,
+		minimizer: [new TerserPlugin()],
+	},
+	devtool: "source-map",
 	devServer: {
 		headers: {
 			'Access-Control-Allow-Origin': '*'
