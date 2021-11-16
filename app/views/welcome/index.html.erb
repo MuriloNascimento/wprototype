@@ -1,6 +1,10 @@
-<n-table title="Bill types" :columns="[{
-    name: 'name',
-    label: 'Dessert',
-    align: 'left',
-    field: row => row.name
-  }]">
+<div class="q-pa-md">
+  <div class="row">
+    <div class="col-12 col-md-8">
+      <n-table title="Bill types" resource="bill_types" v-bind:columns="<%= BillType::TABLE_COLUMNS %>">
+    </div>
+    <div class="col-12 col-md-4">
+      <n-form title="Edit bill type" resource="bill_types"  v-bind:fields="<%= BillType::FIELDS %>">
+    </div>
+  </div>
+</div>

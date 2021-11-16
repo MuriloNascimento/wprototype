@@ -1,16 +1,43 @@
 <template>
   <div class="q-pa-md">
     <q-table
-      :title="title"
-      :rows="rows"
-      :columns="columns"
-      row-key="name"
-    />
+      v-bind:rows-per-page-options="[20]"
+      v-bind:rows="rows"
+      v-bind:columns="columns"
+      row-key="id"
+    >
+      <template v-slot:top>
+        <div class="col-2 q-table__title">{{title}}</div>
+        <q-space />
+        <q-btn color="primary" round icon="add" v-on:click="setSelected({})" />
+      </template>
+      <template v-slot:header="props">
+        <q-tr :props="props">
+          <q-th v-for="col in props.cols" v-bind:key="col.name" v-bind:props="props">
+            {{ col.label }}
+          </q-th>
+        </q-tr>
+      </template>
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <q-td v-for="col in props.cols" v-bind:key="col.name" v-bind:props="props" v-on:click="setSelected({ ...props.row })">
+            <span v-if="col.type === undefined">
+              {{ col.value }}
+            </span>
+            <span v-if="col.type === 'color'">
+              <q-icon name="style" v-bind:style="{'color': `${col.value}`, 'font-size': '2em'}" />
+            </span>
+          </q-td>
+        </q-tr>
+      </template>
+    </q-table>
   </div>
 </template>
 
 <script>
-import {computed} from 'vue'
+import NFormStore from '../store/nform.js'
+import NTableStore from '../store/ntable.js'
+import { computed, onMounted } from 'vue'
 
 export default {
   props: {
@@ -18,18 +45,13 @@ export default {
     columns: Array,
     title: String
   },
-  setup () {
+  setup (props) {
+    onMounted(() => {
+      NTableStore.actions.setRows(props.resource)
+    })
     return {
-      rows: computed(() => { return [{
-        name: 'Frozen Yogurt',
-        calories: 159,
-        fat: 6.0,
-        carbs: 24,
-        protein: 4.0,
-        sodium: 87,
-        calcium: '14%',
-        iron: '1%'
-      }] })
+      rows: computed(() => NTableStore.state.rows),
+      setSelected: NFormStore.actions.setSelected
     }
   }
 }

@@ -1,5 +1,5 @@
 import ntable from './ntable'
 
-export const {
+export default {
 	ntable
 }
