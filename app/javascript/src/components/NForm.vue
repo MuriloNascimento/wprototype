@@ -6,7 +6,7 @@
       </q-card-section>
       <q-separator />
       <q-card-section>
-        <q-form id="form" v-on:submit.stop.prevent="onSave(resource)" class="q-gutter-md">
+        <q-form id="form" class="q-gutter-md">
           <q-banner v-if="error != undefined && getError != null" class="bg-red text-white q-mb-md">!{{error}}</q-banner>
           <div v-for="field in fields" v-bind:key="field.id">
             <q-input v-if="field.type == 'text'"  filled v-model="selected[`${field.name}`]" v-bind:label="field.label" />
@@ -16,7 +16,7 @@
             <q-btn round icon="save" type="submit" color="primary"/>
             <q-btn 
               v-if="selected.id != undefined && selected.id != '' && selected.id != null" 
-              round icon="delete" type="button" color="red" v-on:click="onDelete(resource)"
+              round icon="delete" type="button" color="red" 
             />
           </div>
         </q-form>
@@ -26,8 +26,7 @@
 </template>
 
 <script>
-import NFormStore from '../store/nform.js'
-import { computed } from 'vue'
+import { computed, toRef, reactive, provide } from 'vue'
 
 export default {
     props: {
@@ -36,12 +35,21 @@ export default {
         title: String,
     },
     setup (props) {
+        const state = reactive({
+          selected: {},
+          title: null,
+          error: null
+        })
+        const setSelected = (payload) => {
+          state.selected = toRef(payload)
+        }
+
+        provide('setSelected', setSelected)
+
         return {
-            selected: computed(() => NFormStore.state.selected),
-            error: computed(() => NFormStore.state.error),
-            title: computed(() => NFormStore.state.title),
-            onSave: NFormStore.actions.onSave,
-            onDelete: NFormStore.actions.onDelete
+          selected: computed(() => state.selected),
+          title: computed(() => state.title),
+          error: computed(() => state.error)
         }
     }
 }

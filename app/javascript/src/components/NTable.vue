@@ -35,9 +35,8 @@
 </template>
 
 <script>
-import NFormStore from '../store/nform.js'
-import NTableStore from '../store/ntable.js'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, reactive, inject } from 'vue'
+import axios from "axios"
 
 export default {
   props: {
@@ -46,12 +45,27 @@ export default {
     title: String
   },
   setup (props) {
-    onMounted(() => {
-      NTableStore.actions.setRows(props.resource)
+    const state = reactive({
+      rows: []
     })
+
+    const actions = {
+      async setRows(resource) {
+        const response = await axios.get(`/api/${resource}`)
+        if(typeof response.data != undefined) {
+          state.rows = response.data
+        }
+      }
+    }
+
+    onMounted(() => {
+      actions.setRows(props.resource)
+    })
+
+    const setSelected = inject('setSelected')
     return {
-      rows: computed(() => NTableStore.state.rows),
-      setSelected: NFormStore.actions.setSelected
+      rows: computed(() => state.rows),
+      setSelected
     }
   }
 }

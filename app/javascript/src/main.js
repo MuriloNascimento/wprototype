@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { Quasar } from 'quasar'
-import components from './components/_index'
+import * as components from './components'
 import 'quasar/dist/quasar.prod.css'
 
 const app = createApp({components})
