@@ -3,11 +3,8 @@ module.exports = function (api) {
   
     const presets = ["@babel/preset-env"]
     const plugins = [
-        ['wildcard', {
-            'exts': ["js", "es6", "es", "jsx", "javascript", "vue"]
-        }],
         ["@babel/plugin-transform-runtime", {
-                "regenerator": true
+            "regenerator": true
         }]
     ]
   

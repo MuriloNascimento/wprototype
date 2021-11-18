@@ -13,8 +13,8 @@ transporte = BillType.create({name: 'Transporte', color: '#ebc53f'})
 moradia = BillType.create({name: 'Moradia', color: '#fa2828'})
 banco = BillType.create({name: 'Banco', color: '#3d98d4'})
 
-#aluguel = Bill.create({name: 'Aluguel', bill_type: moradia})
-#cartao = Bill.create({name: 'Cartão', bill_type: banco})
+aluguel = Bill.create({name: 'Aluguel', bill_type: moradia})
+cartao = Bill.create({name: 'Cartão', bill_type: banco})
 
 #BillEvent.create({bill: cartao, target_date: DateTime.now+1.day, value: 350})
 #BillEvent.create({bill: cartao, target_date: DateTime.now+30.days, value: 350})

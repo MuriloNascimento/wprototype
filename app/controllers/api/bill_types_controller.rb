@@ -1,7 +1,7 @@
 module Api
 	class BillTypesController < ActionController::API
 		def index
-			resources = BillType.select('id', 'name', 'color').all.order(:name).as_json
+			resources = BillType.select('id', 'name', 'color').all.as_json
 			render json: resources.to_json, status: :ok
 		end
 
@@ -32,9 +32,9 @@ module Api
 			end
 		end
 
-	  private
-	  def bill_type_params
-		params.permit(:name, :color)
-	  end
+		private
+		def bill_type_params
+			params.require(:bill_type).permit(:id, :name, :color)
+		end
 	end
 end

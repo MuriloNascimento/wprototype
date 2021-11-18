@@ -2,14 +2,14 @@
   <div class="q-pa-md">
     <q-table
       v-bind:rows-per-page-options="[20]"
-      v-bind:rows="rows"
+      v-bind:rows="getRows"
       v-bind:columns="columns"
       row-key="id"
     >
       <template v-slot:top>
         <div class="col-2 q-table__title">{{title}}</div>
         <q-space />
-        <q-btn color="primary" round icon="add" v-on:click="setSelected({})" />
+        <q-btn color="primary" round icon="add" v-on:click="setSelected({})"/>
       </template>
       <template v-slot:header="props">
         <q-tr :props="props">
@@ -20,7 +20,7 @@
       </template>
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td v-for="col in props.cols" v-bind:key="col.name" v-bind:props="props" v-on:click="setSelected({ ...props.row })">
+          <q-td v-for="col in props.cols" v-bind:key="col.name" v-bind:props="props" v-on:click="setSelected({...props.row})" >
             <span v-if="col.type === undefined">
               {{ col.value }}
             </span>
@@ -35,8 +35,8 @@
 </template>
 
 <script>
-import { computed, onMounted, reactive, inject } from 'vue'
-import axios from "axios"
+import { computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
   props: {
@@ -45,35 +45,20 @@ export default {
     title: String
   },
   setup (props) {
-    const state = reactive({
-      rows: []
-    })
 
-    const actions = {
-      async setRows(resource) {
-        const response = await axios.get(`/api/${resource}`)
-        if(typeof response.data != undefined) {
-          state.rows = response.data
-        }
-      }
-    }
+    const store = useStore()
 
     onMounted(() => {
-      actions.setRows(props.resource)
+      store.dispatch('table/setRows', props.resource)
     })
-
-    const setSelected = inject('setSelected')
+  
     return {
-      rows: computed(() => state.rows),
-      setSelected
+      getRows: computed(() => store.getters['table/getRows']),
+      setSelected: (payload) => store.dispatch('form/setSelected', payload)
     }
   }
 }
 </script>
 
 <style lang="css" scoped>
-.my-card{
-    width: 100%;
-    max-width: 250px
-}
 </style>

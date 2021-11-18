@@ -2,21 +2,19 @@
   <div class="q-pa-md">
     <q-card class="my-card">
       <q-card-section>
-        <div class="text-h6">{{title}}</div>
+        <div class="text-h6">{{getTitle}}</div>
       </q-card-section>
       <q-separator />
       <q-card-section>
-        <q-form id="form" class="q-gutter-md">
-          <q-banner v-if="error != undefined && getError != null" class="bg-red text-white q-mb-md">!{{error}}</q-banner>
+        <q-form id="form" v-on:submit.stop.prevent="onSave(resource)" class="q-gutter-md">
+          <q-banner v-if="getError  != undefined && getError != null" class="bg-red text-white q-mb-md">!{{getError}}</q-banner>
           <div v-for="field in fields" v-bind:key="field.id">
-            <q-input v-if="field.type == 'text'"  filled v-model="selected[`${field.name}`]" v-bind:label="field.label" />
-            <q-color v-if="field.type == 'color'" v-model="selected[`${field.name}`]" v-bind:label="field.label" />
+            <q-input v-if="field.type == 'text'"  filled v-model="getSelected[`${field.name}`]" v-bind:label="field.label" />
+            <q-color v-if="field.type == 'color'" v-model="getSelected[`${field.name}`]" v-bind:label="field.label" />
           </div>
           <div>
             <q-btn round icon="save" type="submit" color="primary"/>
-            <q-btn 
-              v-if="selected.id != undefined && selected.id != '' && selected.id != null" 
-              round icon="delete" type="button" color="red" 
+            <q-btn v-if="getSelected.id != undefined && getSelected.id != '' && getSelected.id != null" round icon="delete" type="button" color="red" v-on:click="onDelete(resource)"
             />
           </div>
         </q-form>
@@ -26,31 +24,30 @@
 </template>
 
 <script>
-import { computed, toRef, reactive, provide } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
-    props: {
-        resource: String,
-        fields: Array,
-        title: String,
-    },
-    setup (props) {
-        const state = reactive({
-          selected: {},
-          title: null,
-          error: null
-        })
-        const setSelected = (payload) => {
-          state.selected = toRef(payload)
-        }
+  props: {
+      resource: String,
+      fields: Array,
+      title: String,
+  },
+  setup (props) {
 
-        provide('setSelected', setSelected)
+    const store = useStore()
 
-        return {
-          selected: computed(() => state.selected),
-          title: computed(() => state.title),
-          error: computed(() => state.error)
-        }
+    onMounted(() => {
+      store.dispatch('form/setSelected', {})
+    })
+  
+    return {
+      getSelected: computed(() => store.getters['form/getSelected']),
+      getTitle: computed(() => store.getters['form/getTitle']),
+      getError: computed(() => store.getters['form/getError']),
+      onDelete: (payload) => store.dispatch('form/onDelete', payload),
+      onSave: (payload) => store.dispatch('form/onSave', payload)
     }
+  }
 }
 </script>
