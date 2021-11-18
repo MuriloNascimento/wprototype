@@ -10,6 +10,7 @@ class Bill < ApplicationRecord
     ].to_json
 
     FIELDS = [
-        { name: 'name', label: 'Name', value: '', type: 'text'}
+        { name: 'name', label: 'Name', value: '', type: 'text'},
+        { name: 'bill_type_id', label: 'Bill Type', value: '', type: 'text'}
     ].to_json
 end

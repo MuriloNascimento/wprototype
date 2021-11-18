@@ -31,7 +31,7 @@ const actions = {
     if (state.selected.id == undefined || state.selected.id == '' || state.selected.id == null) {
         try {
           const response = await axios.post(`/api/${resource}`, state.selected)
-          commit('table/insertInList', response.data.data, { root: true })
+          commit(`${resource}::table/insertInList`, response.data.data, { root: true })
           dispatch('setSelected', {})
         } catch (err) {
           commit('setError', err.response.data.message)
@@ -40,7 +40,7 @@ const actions = {
         try {
           console.log(state.selected)
           await axios.put(`/api/${resource}/${state.selected.id}`, state.selected)
-          commit('table/updateInList', state.selected, { root: true })
+          commit(`${resource}::table/updateInList`, state.selected, { root: true })
           dispatch('setSelected', {})
         } catch (err) {
           commit('setError', err.response.data.message)
@@ -50,7 +50,7 @@ const actions = {
   async onDelete ({commit, dispatch, state}, resource) {
     try {
       await axios.delete(`/api/${resource}/${state.selected.id}`, state.selected)
-      commit('table/deleteInList', state.selected, { root: true })
+      commit(`${resource}::table/deleteInList`, state.selected, { root: true })
       dispatch('setSelected', {})
     } catch (err) {
       commit('setError', err.response.data.message)

@@ -7,4 +7,12 @@
       <n-form title="Edit bill type" resource="bill_types"  v-bind:fields="<%= BillType::FIELDS %>">
     </div>
   </div>
+  <div class="row">
+    <div class="col-12 col-md-8">
+      <n-table title="Bills" resource="bills" v-bind:columns="<%= Bill::TABLE_COLUMNS %>">
+    </div>
+    <div class="col-12 col-md-4">
+      <n-form title="Edit bills" resource="bills" v-bind:fields="<%= Bill::FIELDS %>">
+    </div>
+  </div>
 </div>

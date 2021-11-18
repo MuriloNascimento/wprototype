@@ -37,6 +37,7 @@
 <script>
 import { computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
+import table from '../store/table'
 
 export default {
   props: {
@@ -47,14 +48,15 @@ export default {
   setup (props) {
 
     const store = useStore()
+    store.registerModule(`${props.resource}::table`, table)
 
     onMounted(() => {
-      store.dispatch('table/setRows', props.resource)
+      store.dispatch(`${props.resource}::table/setRows`, props.resource)
     })
   
     return {
-      getRows: computed(() => store.getters['table/getRows']),
-      setSelected: (payload) => store.dispatch('form/setSelected', payload)
+      getRows: computed(() => store.getters[`${props.resource}::table/getRows`]),
+      setSelected: (payload) => store.dispatch(`${props.resource}::form/setSelected`, payload)
     }
   }
 }
