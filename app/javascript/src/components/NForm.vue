@@ -26,7 +26,7 @@
 <script>
 import { computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import form from '../store/form'
+import form from '../store/modules/form'
 
 export default {
   props: {
@@ -37,18 +37,18 @@ export default {
   setup (props) {
 
     const store = useStore()
-    store.registerModule(`${props.resource}::form`, form)
+    store.registerModule(['form', props.resource], form)
 
     onMounted(() => {
-      store.dispatch(`${props.resource}::form/setSelected`, {})
+      store.dispatch(`form/${props.resource}/setSelected`, {})
     })
   
     return {
-      getSelected: computed(() => store.getters[`${props.resource}::form/getSelected`]),
-      getTitle: computed(() => store.getters[`${props.resource}::form/getTitle`]),
-      getError: computed(() => store.getters[`${props.resource}::form/getError`]),
-      onDelete: (payload) => store.dispatch(`${props.resource}::form/onDelete`, payload),
-      onSave: (payload) => store.dispatch(`${props.resource}::form/onSave`, payload)
+      getSelected: computed(() => store.getters[`form/${props.resource}/getSelected`]),
+      getTitle: computed(() => store.getters[`form/${props.resource}/getTitle`]),
+      getError: computed(() => store.getters[`form/${props.resource}/getError`]),
+      onDelete: (payload) => store.dispatch(`form/${props.resource}/onDelete`, payload),
+      onSave: (payload) => store.dispatch(`form/${props.resource}/onSave`, payload)
     }
   }
 }

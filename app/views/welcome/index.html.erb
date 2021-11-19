@@ -1,5 +1,8 @@
 <div class="q-pa-md">
   <div class="row">
+    <n-button v-bind:resources="['bill_types', 'bills']"/>
+  </div>
+  <div class="row">
     <div class="col-12 col-md-8">
       <n-table title="Bill types" resource="bill_types" v-bind:columns="<%= BillType::TABLE_COLUMNS %>">
     </div>
