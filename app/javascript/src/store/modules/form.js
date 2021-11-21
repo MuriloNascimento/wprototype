@@ -7,11 +7,10 @@ const state = () => ({
   error: null
 })
 
-// getters
 const getters = {
-	getSelected (state) {
-		return state.selected
-	},
+  getSelected (state) {
+    return state.selected
+  },
   getTitle (state) {
     return state.title
   },
@@ -22,58 +21,20 @@ const getters = {
 
 // actions
 const actions = {
-  setSelected ({commit}, payload) {
-    commit('changeSelected', payload)
-    commit('changeTitle', (typeof payload.id != undefined && payload.id != null) ? 'Edit' : 'New')
-    commit('setError', null)
+  setSelected ({state}, payload) {
+    state.selected = payload
+    state.title = (typeof payload.id != undefined && payload.id != null) ? 'Edit' : 'New'
+    state.error = null
   },
-  async onSave ({commit, dispatch, state}, resource) {
-    if (state.selected.id == undefined || state.selected.id == '' || state.selected.id == null) {
-        try {
-          const response = await axios.post(`/api/${resource}`, state.selected)
-          commit(`table/${resource}/insertInList`, response.data.data, { root: true })
-          dispatch('setSelected', {})
-        } catch (err) {
-          commit('setError', err.response.data.message)
-        }
-      } else {
-        try {
-          await axios.put(`/api/${resource}/${state.selected.id}`, state.selected)
-          commit(`table/${resource}/updateInList`, state.selected, { root: true })
-          dispatch('setSelected', {})
-        } catch (err) {
-          commit('setError', err.response.data.message)
-      }
-    }
+  onSave ({commit, dispatch, state}, resource) {
   },
-  async onDelete ({commit, dispatch, state}, resource) {
-    try {
-      await axios.delete(`/api/${resource}/${state.selected.id}`, state.selected)
-      commit(`table/${resource}/deleteInList`, state.selected, { root: true })
-      dispatch('setSelected', {})
-    } catch (err) {
-      commit('setError', err.response.data.message)
-    }
-  }
-}
-
-// mutations
-const mutations = {
-	changeSelected (state, payload) {
-		state.selected = payload
-	},
-  changeTitle (state, payload) {
-    state.title = payload
-  },
-  setError (state, payload) {
-    state.error =  payload
+  onDelete ({commit, dispatch, state}, resource) {
   }
 }
 
 export default {
   namespaced: true,
   state,
-  getters,
   actions,
-  mutations
+  getters
 }

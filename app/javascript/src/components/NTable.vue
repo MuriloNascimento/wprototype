@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <q-table
       v-bind:rows-per-page-options="[20]"
-      v-bind:rows="getRows"
+      v-bind:rows="rows"
       v-bind:columns="columns"
       row-key="id"
     >
@@ -39,6 +39,7 @@ import { computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import table from '../store/modules/table'
 
+
 export default {
   props: {
     resource: String,
@@ -55,7 +56,7 @@ export default {
     })
   
     return {
-      getRows: computed(() => store.getters[`table/${props.resource}/getRows`]),
+      rows: computed(() => store.getters[`table/${props.resource}/getRows`]),
       setSelected: (payload) => store.dispatch(`form/${props.resource}/setSelected`, payload)
     }
   }

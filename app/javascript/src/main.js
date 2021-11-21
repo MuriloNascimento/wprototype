@@ -1,5 +1,4 @@
 import { createApp } from 'vue'
-import { createStore } from 'vuex'
 import { Quasar } from 'quasar'
 import components from './components/index'
 import store from './store/index'
