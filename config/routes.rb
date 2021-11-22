@@ -4,8 +4,8 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: { format: :json } do
     # resources :resources, only: [:index]
-    resources :bill_types, only: [:index, :create, :update, :destroy]
-    resources :bills, only: [:index, :create, :update, :destroy]
+    resources :item_types, only: [:index, :create, :update, :destroy]
+    resources :items, only: [:index, :create, :update, :destroy]
   end
 
   root :to => "welcome#index"

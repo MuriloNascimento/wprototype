@@ -12,19 +12,19 @@
 
 ActiveRecord::Schema.define(version: 2021_11_18_175542) do
 
-  create_table "bill_types", force: :cascade do |t|
+  create_table "item_types", force: :cascade do |t|
     t.string "name"
     t.string "color"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "bills", force: :cascade do |t|
+  create_table "items", force: :cascade do |t|
     t.string "name"
-    t.integer "bill_type_id"
+    t.integer "item_type_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["bill_type_id"], name: "index_bills_on_bill_type_id"
+    t.index ["item_type_id"], name: "index_items_on_item_type_id"
   end
 
 end

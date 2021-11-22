@@ -6,7 +6,5 @@ import 'quasar/dist/quasar.prod.css'
 const app = createApp({components})
 
 app.use(Quasar)
-app.provide('store', reactive({
-    modules: {}
-}))
+app.provide('store', reactive({}))
 const vmContent = app.mount('#vue-app')

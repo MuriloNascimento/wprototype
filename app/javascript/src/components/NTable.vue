@@ -51,34 +51,34 @@ export default {
     const store = inject("store")
 
     // cria dinâmicamente um módulo para expor os dados e ações desta instância de componente
-    store.modules[props.module] = { ...store.modules[props.module], ...{
+    store[props.module] = { ...store[props.module], ...{
       rows: [],
       async setRows () {
         const response = await axios.get(`/api/${props.resource}`)
         if(typeof response.data != undefined) {
-          store.modules[props.module].rows = response.data
+          store[props.module].rows = response.data
         }
       },
       insertRow (itemSelected) {
-    	  store.modules[props.module].rows.push(itemSelected)
+    	  store[props.module].rows.push(itemSelected)
       },
       updateRow (itemSelected) {
-        const index = store.modules[props.module].rows.findIndex(item => item.id === itemSelected.id)
-        store.modules[props.module].rows.splice(index, 1, itemSelected)
+        const index = store[props.module].rows.findIndex(item => item.id === itemSelected.id)
+        store[props.module].rows.splice(index, 1, itemSelected)
       },
       deleteRow (itemSelected) {
-        const index = store.modules[props.module].rows.findIndex(item => item.id === itemSelected.id)
-        store.modules[props.module].rows.splice(index, 1)
+        const index = store[props.module].rows.findIndex(item => item.id === itemSelected.id)
+        store[props.module].rows.splice(index, 1)
       }
     }}
 
     onMounted(() => {
-      store.modules[props.module].setRows()
+      store[props.module].setRows()
     })
 
     return {
-      rows: computed(() => store.modules[props.module].rows),
-      setSelected: (payload) => store.modules[props.module].setSelected(payload)
+      rows: computed(() => store[props.module].rows),
+      setSelected: (payload) => store[props.module].setSelected(payload)
     }
   }
 }
