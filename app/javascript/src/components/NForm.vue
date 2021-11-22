@@ -24,31 +24,71 @@
 </template>
 
 <script>
-import { computed, onMounted } from 'vue'
-import { useStore } from 'vuex'
-import form from '../store/modules/form'
+import { computed, onMounted, inject } from 'vue'
+import axios from "axios"
 
 export default {
   props: {
+    module: String,
     resource: String,
     fields: Array,
     title: String,
   },
   setup (props) {
 
-    const store = useStore()
-    store.registerModule(['form', props.resource], form)
+    // injeta o banco de dados expostos pelos componentes
+    const store = inject("store")
+
+    // cria dinâmicamente um módulo para expor os dados e ações desta instância de componente
+    store.modules[props.module] = { ...store.modules[props.module], ...{
+      selected: {},
+      title: null,
+      error: null,
+      async onSave () {
+          if (store.modules[props.module].selected.id == undefined || store.modules[props.module].selected.id == '' || store.modules[props.module].selected.id == null) {
+            try {
+              const response = await axios.post(`/api/${props.resource}`, store.modules[props.module].selected)
+              store.modules[props.module].insertRow(response.data.data)
+              store.modules[props.module].selected = {}
+            } catch (err) {
+              store.modules[props.module].error = err
+            }
+          } else {
+            try {
+              await axios.put(`/api/${props.resource}/${store.modules[props.module].selected.id}`, store.modules[props.module].selected)
+              store.modules[props.module].updateRow(store.modules[props.module].selected)
+              store.modules[props.module].selected = {}
+            } catch (err) {
+              store.modules[props.module].error = err
+          }
+        }
+      },
+      async onDelete () {
+        try {
+          await axios.delete(`/api/${props.resource}/${store.modules[props.module].selected.id}`)
+          store.modules[props.module].deleteRow(store.modules[props.module].selected)
+          store.modules[props.module].selected = {}
+        } catch (err) {
+          store.modules[props.module].error = err
+        }
+      },
+      setSelected (payload) {
+        store.modules[props.module].selected = payload
+        store.modules[props.module].title = (typeof payload.id != undefined && payload.id != null) ? 'Edit' : 'New'
+        store.modules[props.module].error = null
+      }
+    }}
 
     onMounted(() => {
-      store.dispatch(`form/${props.resource}/setSelected`, {})
+      store.modules[props.module].setSelected({})
     })
-  
+
     return {
-      getSelected: computed(() => store.getters[`form/${props.resource}/getSelected`]),
-      getTitle: computed(() => store.getters[`form/${props.resource}/getTitle`]),
-      getError: computed(() => store.getters[`form/${props.resource}/getError`]),
-      onDelete: (payload) => store.dispatch(`form/${props.resource}/onDelete`, payload),
-      onSave: (payload) => store.dispatch(`form/${props.resource}/onSave`, payload)
+      getSelected: computed(() => store.modules[props.module].selected),
+      getTitle: computed(() => store.modules[props.module].title),
+      getError: computed(() => store.modules[props.module].error),
+      onDelete: (payload) => store.modules[props.module].onDelete(payload),
+      onSave: (payload) => store.modules[props.module].onSave(payload)
     }
   }
 }

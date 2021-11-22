@@ -1,11 +1,12 @@
-import { createApp } from 'vue'
+import { createApp, reactive } from 'vue'
 import { Quasar } from 'quasar'
 import components from './components/index'
-import store from './store/index'
 import 'quasar/dist/quasar.prod.css'
 
 const app = createApp({components})
 
 app.use(Quasar)
-app.use(store)
+app.provide('store', reactive({
+    modules: {}
+}))
 const vmContent = app.mount('#vue-app')

@@ -35,29 +35,50 @@
 </template>
 
 <script>
-import { computed, onMounted } from 'vue'
-import { useStore } from 'vuex'
-import table from '../store/modules/table'
-
+import { computed, onMounted, inject } from 'vue'
+import axios from 'axios'
 
 export default {
   props: {
+    module: String,
     resource: String,
     columns: Array,
     title: String
   },
   setup (props) {
 
-    const store = useStore()
-    store.registerModule(['table', props.resource], table)
+    // injeta o banco de dados expostos pelos componentes
+    const store = inject("store")
+
+    // cria dinâmicamente um módulo para expor os dados e ações desta instância de componente
+    store.modules[props.module] = { ...store.modules[props.module], ...{
+      rows: [],
+      async setRows () {
+        const response = await axios.get(`/api/${props.resource}`)
+        if(typeof response.data != undefined) {
+          store.modules[props.module].rows = response.data
+        }
+      },
+      insertRow (itemSelected) {
+    	  store.modules[props.module].rows.push(itemSelected)
+      },
+      updateRow (itemSelected) {
+        const index = store.modules[props.module].rows.findIndex(item => item.id === itemSelected.id)
+        store.modules[props.module].rows.splice(index, 1, itemSelected)
+      },
+      deleteRow (itemSelected) {
+        const index = store.modules[props.module].rows.findIndex(item => item.id === itemSelected.id)
+        store.modules[props.module].rows.splice(index, 1)
+      }
+    }}
 
     onMounted(() => {
-      store.dispatch(`table/${props.resource}/setRows`, props.resource)
+      store.modules[props.module].setRows()
     })
-  
+
     return {
-      rows: computed(() => store.getters[`table/${props.resource}/getRows`]),
-      setSelected: (payload) => store.dispatch(`form/${props.resource}/setSelected`, payload)
+      rows: computed(() => store.modules[props.module].rows),
+      setSelected: (payload) => store.modules[props.module].setSelected(payload)
     }
   }
 }
