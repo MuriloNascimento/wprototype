@@ -40,10 +40,22 @@ import { computed, onMounted, inject, reactive } from 'vue'
 
 export default {
   props: {
-    module: String,
-    resource: String,
-    columns: Array,
-    title: String
+    module: {
+      type: String,
+      required: true
+    },
+    resource: {
+      type: String,
+      required: true
+    },
+    columns: {
+      type: Array,
+      required: true
+    },
+    title: {
+      type: String,
+      required: true
+    }
   },
   setup (props) {
 
@@ -59,36 +71,34 @@ export default {
     })
 
     // Métodos que manipulam os atributos deste componente
-    const actions = {
-      async setRows () {
-        const response = await axios.get(`/api/${props.resource}`)
-        if(typeof response.data != undefined) {
-          state.rows = response.data
-        }
-      },
-      insertRow (itemSelected) {
-    	  state.rows.push(itemSelected)
-      },
-      updateRow (itemSelected) {
-        const index = state.rows.findIndex(item => item.id === itemSelected.id)
-        state.rows.splice(index, 1, itemSelected)
-      },
-      deleteRow (itemSelected) {
-        const index = state.rows.findIndex(item => item.id === itemSelected.id)
-        state.rows.splice(index, 1)
+    const setRows = async () => {
+      const response = await axios.get(`/api/${props.resource}`)
+      if(typeof response.data != undefined) {
+        state.rows = response.data
       }
+    }
+    const insertRow = (itemSelected) => {
+    	state.rows.push(itemSelected)
+    }
+    const updateRow = (itemSelected) => {
+      const index = state.rows.findIndex(item => item.id === itemSelected.id)
+      state.rows.splice(index, 1, itemSelected)
+    }
+    const deleteRow = (itemSelected) => {
+      const index = state.rows.findIndex(item => item.id === itemSelected.id)
+      state.rows.splice(index, 1)
     }
   
     // Lifecycle hooks https://v3.vuejs.org/api/options-lifecycle-hooks.html
     onMounted(() => {
-      actions.setRows()
+      setRows()
     })
 
-    // Cria ou adiciona novos metodos no banco de metodos (somente os metodos necessários)
+    // Cria ou adiciona novo módulo, adiciona novos métodos no banco de metodos (somente os métodos que devem ser utilizados em outros componentes)
     store[self] = { ...store[self], 
-      insertRow: (itemSelected) => actions.insertRow(itemSelected),
-      updateRow: (itemSelected) => actions.updateRow(itemSelected),
-      deleteRow: (itemSelected) => actions.deleteRow(itemSelected),
+      insertRow,
+      updateRow,
+      deleteRow
     }
 
     // Retorna os atributos e metodos que devem ser utilizados no template

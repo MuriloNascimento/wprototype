@@ -29,9 +29,18 @@ import axios from "axios"
 
 export default {
   props: {
-    module: String,
-    resource: String,
-    fields: Array
+    module: {
+      type: String,
+      required: true
+    },
+    resource: {
+      type: String,
+      required: true
+    },
+    fields: {
+      type: Array,
+      required: true
+    }
   },
   setup (props) {
 
@@ -49,50 +58,48 @@ export default {
     })
 
     // Métodos que manipulam os atributos deste componente
-    const actions = {
-      setSelected (selected) {
+    const setSelected = (selected) => {
         state.selected = selected
         state.title = (typeof selected.id != undefined && selected.id != null) ? 'Edit' : 'New'
         state.error = null
-      },
-      async onSave () {
-        if (state.selected.id == undefined || state.selected.id == '' || state.selected.id == null) {
-          try {
-            const response = await axios.post(`/api/${props.resource}`, state.selected)
-            store[self].insertRow(response.data.data)
-            state.selected = {}
-          } catch (err) {
-            state.error = err
-          }
-        } else {
-          try {
-            await axios.put(`/api/${props.resource}/${state.selected.id}`, state.selected)
-            store[self].updateRow(state.selected)
-            state.selected = {}
-          } catch (err) {
-            state.error = err
-          }
-        }
-      },
-      async onDelete () {
+    }
+    const onSave = async () => {
+      if (state.selected.id == undefined || state.selected.id == '' || state.selected.id == null) {
         try {
-          await axios.delete(`/api/${props.resource}/${state.selected.id}`)
-          store[self].deleteRow(state.selected)
+          const response = await axios.post(`/api/${props.resource}`, state.selected)
+          store[self].insertRow(response.data.data)
           state.selected = {}
         } catch (err) {
           state.error = err
         }
-      },
+      } else {
+        try {
+          await axios.put(`/api/${props.resource}/${state.selected.id}`, state.selected)
+          store[self].updateRow(state.selected)
+          state.selected = {}
+        } catch (err) {
+          state.error = err
+        }
+      }
+    }
+    const onDelete = async () => {
+      try {
+        await axios.delete(`/api/${props.resource}/${state.selected.id}`)
+        store[self].deleteRow(state.selected)
+        state.selected = {}
+      } catch (err) {
+        state.error = err
+      }
     }
 
     // Lifecycle hooks https://v3.vuejs.org/api/options-lifecycle-hooks.html
     onMounted(() => {
-      actions.setSelected({})
+      setSelected({})
     })
 
     // Cria ou adiciona novos metodos no módulo do banco de metodos (somente os metodos necessários)
     store[self] = { ...store[self], 
-      setSelected: (selected) => actions.setSelected(selected)
+      setSelected
     }
 
     // Retorna os atributos e metodos que devem ser utilizados no template
@@ -100,8 +107,8 @@ export default {
       selected: computed(() => state.selected),
       title: computed(() => state.title),
       error: computed(() => state.error),
-      onDelete: () => actions.onDelete(),
-      onSave: () => actions.onSave()
+      onDelete,
+      onSave
     }
   }
 }

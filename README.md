@@ -1,24 +1,19 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+* git clone git@github.com:MuriloNascimento/wprototype.git
 
-Things you may want to cover:
+* cd wprototype
 
-* Ruby version
+* bundle install
 
-* System dependencies
+* rails db:create
 
-* Configuration
+* rails db:migrate
 
-* Database creation
+* rails db:seed
 
-* Database initialization
+* rails s
 
-* How to run the test suite
+* rails webpack:install
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* rails webpack:start

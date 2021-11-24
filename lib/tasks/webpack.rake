@@ -1,12 +1,20 @@
+def system!(*args)
+  system(*args) || abort("\n== Stop webpack ==")
+end
+
 namespace :webpack do
-    desc "Compile webpack bundles"
-    task(:build) { sh "npm run build --prefix app/javascript/" }
+    task(:build) do
+        puts '== Compile webpack bundles =='
+        system! "npm run build --prefix app/javascript" 
+    end
   
-    desc "Start webpack dev server"
     task(:start) do
-        sh "npm run start --prefix app/javascript/" 
+        puts '== Start webpack dev server =='
+        system! "npm run start --prefix app/javascript/"
     end
 
-    desc "Install node packages"
-    task(:install) { sh "npm install --prefix app/javascript/" }
+    task(:install) do
+        puts '== Install npm packages =='
+        system! "npm install --prefix app/javascript"
+    end
 end
