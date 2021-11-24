@@ -35,8 +35,8 @@
 </template>
 
 <script>
-import { computed, onMounted, inject } from 'vue'
 import axios from 'axios'
+import { computed, onMounted, inject, reactive } from 'vue'
 
 export default {
   props: {
@@ -47,38 +47,54 @@ export default {
   },
   setup (props) {
 
-    // injeta o banco de dados expostos pelos componentes
+    // Armazena em uma constante o nome deste módulo
+    const self = props.module
+
+    // Injeta o banco de metodos
     const store = inject("store")
 
-    // cria dinâmicamente um módulo para expor os dados e ações desta instância de componente
-    store[props.module] = { ...store[props.module], ...{
-      rows: [],
+    // Atributos do componente
+    const state = reactive({
+      rows: []
+    })
+
+    // Métodos que manipulam os atributos deste componente
+    const actions = {
       async setRows () {
         const response = await axios.get(`/api/${props.resource}`)
         if(typeof response.data != undefined) {
-          store[props.module].rows = response.data
+          state.rows = response.data
         }
       },
       insertRow (itemSelected) {
-    	  store[props.module].rows.push(itemSelected)
+    	  state.rows.push(itemSelected)
       },
       updateRow (itemSelected) {
-        const index = store[props.module].rows.findIndex(item => item.id === itemSelected.id)
-        store[props.module].rows.splice(index, 1, itemSelected)
+        const index = state.rows.findIndex(item => item.id === itemSelected.id)
+        state.rows.splice(index, 1, itemSelected)
       },
       deleteRow (itemSelected) {
-        const index = store[props.module].rows.findIndex(item => item.id === itemSelected.id)
-        store[props.module].rows.splice(index, 1)
+        const index = state.rows.findIndex(item => item.id === itemSelected.id)
+        state.rows.splice(index, 1)
       }
-    }}
-
+    }
+  
+    // Lifecycle hooks https://v3.vuejs.org/api/options-lifecycle-hooks.html
     onMounted(() => {
-      store[props.module].setRows()
+      actions.setRows()
     })
 
+    // Cria ou adiciona novos metodos no banco de metodos (somente os metodos necessários)
+    store[self] = { ...store[self], 
+      insertRow: (itemSelected) => actions.insertRow(itemSelected),
+      updateRow: (itemSelected) => actions.updateRow(itemSelected),
+      deleteRow: (itemSelected) => actions.deleteRow(itemSelected),
+    }
+
+    // Retorna os atributos e metodos que devem ser utilizados no template
     return {
-      rows: computed(() => store[props.module].rows),
-      setSelected: (payload) => store[props.module].setSelected(payload)
+      rows: computed(() => state.rows),
+      setSelected: (selected) => store[self].setSelected(selected)
     }
   }
 }

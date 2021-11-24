@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { computed, onMounted, inject } from 'vue'
+import { computed, onMounted, inject, reactive } from 'vue'
 import axios from "axios"
 
 export default {
@@ -35,59 +35,73 @@ export default {
   },
   setup (props) {
 
-    // injeta o banco de dados expostos pelos componentes
-    const store = inject("store")
+    // Armazena em uma constante o nome deste módulo
+    const self = props.module
 
-    // cria dinâmicamente um módulo para expor os dados e ações desta instância de componente
-    store[props.module] = { ...store[props.module], ...{
+    // Injeta o banco de metodos
+    const store = inject("store")
+    
+    // Atributos do componente
+    const state = reactive({
       selected: {},
       title: null,
       error: null,
+    })
+
+    // Métodos que manipulam os atributos deste componente
+    const actions = {
+      setSelected (selected) {
+        state.selected = selected
+        state.title = (typeof selected.id != undefined && selected.id != null) ? 'Edit' : 'New'
+        state.error = null
+      },
       async onSave () {
-        if (store[props.module].selected.id == undefined || store[props.module].selected.id == '' || store[props.module].selected.id == null) {
+        if (state.selected.id == undefined || state.selected.id == '' || state.selected.id == null) {
           try {
-            const response = await axios.post(`/api/${props.resource}`, store[props.module].selected)
-            store[props.module].insertRow(response.data.data)
-            store[props.module].selected = {}
+            const response = await axios.post(`/api/${props.resource}`, state.selected)
+            store[self].insertRow(response.data.data)
+            state.selected = {}
           } catch (err) {
-            store[props.module].error = err
+            state.error = err
           }
         } else {
           try {
-            await axios.put(`/api/${props.resource}/${store[props.module].selected.id}`, store[props.module].selected)
-            store[props.module].updateRow(store[props.module].selected)
-            store[props.module].selected = {}
+            await axios.put(`/api/${props.resource}/${state.selected.id}`, state.selected)
+            store[self].updateRow(state.selected)
+            state.selected = {}
           } catch (err) {
-            store[props.module].error = err
+            state.error = err
           }
         }
       },
       async onDelete () {
         try {
-          await axios.delete(`/api/${props.resource}/${store[props.module].selected.id}`)
-          store[props.module].deleteRow(store[props.module].selected)
-          store[props.module].selected = {}
+          await axios.delete(`/api/${props.resource}/${state.selected.id}`)
+          store[self].deleteRow(state.selected)
+          state.selected = {}
         } catch (err) {
-          store[props.module].error = err
+          state.error = err
         }
       },
-      setSelected (payload) {
-        store[props.module].selected = payload
-        store[props.module].title = (typeof payload.id != undefined && payload.id != null) ? 'Edit' : 'New'
-        store[props.module].error = null
-      }
-    }}
+    }
 
+    // Lifecycle hooks https://v3.vuejs.org/api/options-lifecycle-hooks.html
     onMounted(() => {
-      store[props.module].setSelected({})
+      actions.setSelected({})
     })
 
+    // Cria ou adiciona novos metodos no módulo do banco de metodos (somente os metodos necessários)
+    store[self] = { ...store[self], 
+      setSelected: (selected) => actions.setSelected(selected)
+    }
+
+    // Retorna os atributos e metodos que devem ser utilizados no template
     return {
-      selected: computed(() => store[props.module].selected),
-      title: computed(() => store[props.module].title),
-      error: computed(() => store[props.module].error),
-      onDelete: () => store[props.module].onDelete(),
-      onSave: () => store[props.module].onSave()
+      selected: computed(() => state.selected),
+      title: computed(() => state.title),
+      error: computed(() => state.error),
+      onDelete: () => actions.onDelete(),
+      onSave: () => actions.onSave()
     }
   }
 }
