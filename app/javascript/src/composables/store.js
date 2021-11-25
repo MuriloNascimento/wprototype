@@ -1,18 +1,22 @@
 import {inject} from 'vue'
 
-export function useStore(module) {
+export function useStore(module = 'commons') {
     // injeta o objeto store
     const store = inject("store")
 
-    // cria ou busca o modulo de componentes
+    // Cria ou busca um módulo existente
     store[module] = { ...store[module] }
 
-    // busca uma ação desse módulo no store
+    // Retorna uma ação sem executar
     const get = (action) => {
-        return store[module][`${action}`]
+        return (...args) => {
+            if (store[module][action] != undefined){
+                store[module][action](...args)
+            }
+        }
     }
 
-    // salva uma ação desse módulo no store
+    // Adiciona uma ação
     const save = (actions) => {
         store[module] = { ...store[module], 
 			...actions

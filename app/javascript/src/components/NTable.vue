@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { computed, onMounted, inject, reactive } from 'vue'
+import { computed, onMounted, reactive } from 'vue'
 import api from '../services/api/commons'
 import { useStore } from '../composables/store'
 
@@ -53,7 +53,7 @@ export default {
 		const store = useStore(props.module)
 
 		// Busca no store, as ações necessárias para esse componente
-		const setSelected = selected => store.get('setSelected')(selected)
+		const setSelected = store.get('setSelected')
 
 		// Atributos do componente
 		const state = reactive({

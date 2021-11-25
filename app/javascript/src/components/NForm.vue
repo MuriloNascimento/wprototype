@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { computed, onMounted, inject, reactive } from 'vue'
+import { computed, onMounted, reactive } from 'vue'
 import api from '../services/api/commons'
 import { useStore } from '../composables/store'
 
@@ -48,19 +48,20 @@ export default {
 		const store = useStore(props.module)
 
 		// Busca no store, as ações necessárias para esse componente
-		const insertRow = row => store.get('insertRow')(row)
-		const updateRow = row => store.get('updateRow')(row)
-		const deleteRow = row => store.get('deleteRow')(row)
+		const insertRow = store.get('insertRow')
+		const updateRow = store.get('updateRow')
+		const deleteRow = store.get('deleteRow')
 
-		// Atributos do componente
+		// Atributos
 		const state = reactive({
 			selected: {},
 			title: null,
 			error: null
 		})
 
-		// Ações que manipulam os atributos deste componente
-		const setSelected = selected => {
+		// Ações
+		const setSelected = (selected, teste) => {
+			console.log(teste)
 			state.selected = selected
 			state.title = (typeof selected.id != undefined && selected.id != null) ? 'Edit' : 'New'
 			state.error = null
