@@ -13,7 +13,7 @@
 			</template>
 			<template v-slot:body="props">
 				<q-tr :props="props">
-					<q-td v-for="col in props.cols" v-bind:key="col.name" v-bind:props="props" v-on:click="setSelected({...props.row})" >
+					<q-td v-for="col in props.cols" v-bind:key="col.name" v-bind:props="props" v-on:click="setSelected({...props.row}, 'alo mundo')" >
 						<span v-if="col.type === undefined">{{ col.value }}</span>
 						<span v-if="col.type === 'color'"><q-icon name="style" v-bind:style="{'color': `${col.value}`, 'font-size': '2em'}" /></span>
 					</q-td>
@@ -49,20 +49,20 @@ export default {
 	},
 	setup (props) {
 
-		// Injeta o banco de metodos
+		// Instancia a composição store passando o módulo desse componente como parâmetro
 		const store = useStore(props.module)
 
-		// Busca no store, os metodos necessários para esse componente
-		const setSelected = store.get('setSelected')
+		// Busca no store, as ações necessárias para esse componente
+		const setSelected = selected => store.get('setSelected')(selected)
 
 		// Atributos do componente
 		const state = reactive({
 			rows: []
 		})
 
-		// Métodos que manipulam os atributos deste componente
+		// Ações que manipulam os atributos deste componente
 		const setRows = () => {
-			api.get(`${props.resource}`).then((response) => {
+			api.get(props.resource).then((response) => {
 				state.rows = response.data
 			})
 		}
@@ -83,14 +83,14 @@ export default {
 			setRows()
 		})
 
-		// adiciona novos métodos no banco de metodos (somente os métodos que devem ser utilizados em outros componentes)
+		// adiciona novas ações no store (somente as ações que devem ser utilizadas em outros componentes)
 		store.save({
 			insertRow,
 			updateRow,
 			deleteRow
 		})
 
-		// Retorna os atributos e metodos que devem ser utilizados no template
+		// Retorna os atributos e ações que devem ser utilizados no template
 		return {
 			rows: computed(() => state.rows),
 			setSelected

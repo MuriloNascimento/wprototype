@@ -44,13 +44,13 @@ export default {
 	},
 	setup (props) {
 
-		// Injeta o banco de metodos
+		// Instancia a composição store passando o módulo desse componente como parâmetro
 		const store = useStore(props.module)
 
-		// Busca no store, os metodos necessários para esse componente
-		const insertRow = store.get('insertRow')
-		const updateRow = store.get('updateRow')
-		const deleteRow = store.get('deleteRow')
+		// Busca no store, as ações necessárias para esse componente
+		const insertRow = row => store.get('insertRow')(row)
+		const updateRow = row => store.get('updateRow')(row)
+		const deleteRow = row => store.get('deleteRow')(row)
 
 		// Atributos do componente
 		const state = reactive({
@@ -59,7 +59,7 @@ export default {
 			error: null
 		})
 
-		// Métodos que manipulam os atributos deste componente
+		// Ações que manipulam os atributos deste componente
 		const setSelected = selected => {
 			state.selected = selected
 			state.title = (typeof selected.id != undefined && selected.id != null) ? 'Edit' : 'New'
@@ -96,12 +96,12 @@ export default {
 			setSelected({})
 		})
 
-		// Cria ou adiciona novos metodos no módulo do banco de metodos (somente os metodos necessários)
+		// Adiciona novas ações no store (somente as ações que devem ser utilizadas em outros componentes)
 		store.save({
 			setSelected
 		})
 
-		// Retorna os atributos e metodos que devem ser utilizados no template
+		// Retorna os atributos e ações que devem ser utilizados no template
 		return {
 			selected: computed(() => state.selected),
 			title: computed(() => state.title),
