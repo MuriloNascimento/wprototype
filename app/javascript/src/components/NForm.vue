@@ -25,6 +25,7 @@
 <script>
 import { computed, onMounted, inject, reactive } from 'vue'
 import api from '../services/api/commons'
+import { useStore } from '../composables/store'
 
 export default {
 	props: {
@@ -44,12 +45,12 @@ export default {
 	setup (props) {
 
 		// Injeta o banco de metodos
-		const store = inject("store")
+		const store = useStore(props.module)
 
 		// Busca no store, os metodos necessários para esse componente
-		const insertRow = row => store[props.module].insertRow(row)
-		const updateRow = row => store[props.module].updateRow(row)
-		const deleteRow = row => store[props.module].deleteRow(row)
+		const insertRow = store.get('insertRow')
+		const updateRow = store.get('updateRow')
+		const deleteRow = store.get('deleteRow')
 
 		// Atributos do componente
 		const state = reactive({
@@ -67,17 +68,17 @@ export default {
 		const onSave = () => {
 			if (state.selected.id == undefined || state.selected.id == '' || state.selected.id == null) {
 				api.create(props.resource, state.selected).then( response => {
-					insertRow(response.data)
+					insertRow(response.data.data)
 					setSelected({})
 				}).catch( error => {
-					state.error = error.data.message
+					state.error = error.response.data.message
 				})
 			} else {
 				api.update(props.resource, state.selected).then( response => {
 					updateRow(state.selected)
 					setSelected({})
 				}).catch( error => {
-					state.error = error.data.message
+					state.error = error.response.data.message
 				})
 			}
 		}
@@ -86,7 +87,7 @@ export default {
 				deleteRow(state.selected)
 				setSelected({})
 			}).catch( error => {
-				state.error = error.data.message
+				state.error = error.response.data.message
 			})
 		}
 
@@ -96,9 +97,9 @@ export default {
 		})
 
 		// Cria ou adiciona novos metodos no módulo do banco de metodos (somente os metodos necessários)
-		store[props.module] = { ...store[props.module], 
+		store.save({
 			setSelected
-		}
+		})
 
 		// Retorna os atributos e metodos que devem ser utilizados no template
 		return {

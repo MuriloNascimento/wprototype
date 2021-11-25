@@ -26,6 +26,7 @@
 <script>
 import { computed, onMounted, inject, reactive } from 'vue'
 import api from '../services/api/commons'
+import { useStore } from '../composables/store'
 
 export default {
 	props: {
@@ -49,10 +50,10 @@ export default {
 	setup (props) {
 
 		// Injeta o banco de metodos
-		const store = inject("store")
+		const store = useStore(props.module)
 
 		// Busca no store, os metodos necessários para esse componente
-		const setSelected = selected => store[props.module].setSelected(selected)
+		const setSelected = store.get('setSelected')
 
 		// Atributos do componente
 		const state = reactive({
@@ -82,12 +83,12 @@ export default {
 			setRows()
 		})
 
-		// Cria ou adiciona novo módulo, adiciona novos métodos no banco de metodos (somente os métodos que devem ser utilizados em outros componentes)
-		store[props.module] = { ...store[props.module], 
+		// adiciona novos métodos no banco de metodos (somente os métodos que devem ser utilizados em outros componentes)
+		store.save({
 			insertRow,
 			updateRow,
 			deleteRow
-		}
+		})
 
 		// Retorna os atributos e metodos que devem ser utilizados no template
 		return {

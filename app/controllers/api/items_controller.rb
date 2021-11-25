@@ -34,7 +34,7 @@ module Api
 
 		private
 		def item_params
-			params.require(:item).permit(:id, :name, :item_type_id)
+			params.permit(:id, :name, :item_type_id)
 		end
 	end
 end
