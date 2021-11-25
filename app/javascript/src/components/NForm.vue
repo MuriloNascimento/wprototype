@@ -26,6 +26,7 @@
 import { computed, onMounted, reactive } from 'vue'
 import api from '../services/api/commons'
 import { useStore } from '../composables/store'
+import { useQuasar } from 'quasar'
 
 export default {
 	props: {
@@ -44,6 +45,9 @@ export default {
 	},
 	setup (props) {
 
+		// Se for preciso utilizar alguma funcionalidade do dentro do setup: https://quasar.dev/options/the-q-object
+		const $q = useQuasar()
+
 		// Instancia a composição store passando o módulo desse componente como parâmetro
 		const store = useStore(props.module)
 
@@ -60,8 +64,16 @@ export default {
 		})
 
 		// Ações
-		const setSelected = (selected, teste) => {
-			console.log(teste)
+		const setError = message => {
+			state.error = message
+			$q.notify({
+				message: message,
+				type: 'negative',
+				position: 'top',
+				timeout: 2000
+			})
+		}
+		const setSelected = selected => {
 			state.selected = selected
 			state.title = (typeof selected.id != undefined && selected.id != null) ? 'Edit' : 'New'
 			state.error = null
@@ -72,14 +84,14 @@ export default {
 					insertRow(response.data.data)
 					setSelected({})
 				}).catch( error => {
-					state.error = error.response.data.message
+					setError(error.response.data.message)
 				})
 			} else {
 				api.update(props.resource, state.selected).then( response => {
 					updateRow(state.selected)
 					setSelected({})
 				}).catch( error => {
-					state.error = error.response.data.message
+					setError(error.response.data.message)
 				})
 			}
 		}
@@ -88,7 +100,7 @@ export default {
 				deleteRow(state.selected)
 				setSelected({})
 			}).catch( error => {
-				state.error = error.response.data.message
+				setError(error.response.data.message)
 			})
 		}
 

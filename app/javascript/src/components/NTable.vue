@@ -1,5 +1,6 @@
 <template>
 	<div class="q-pa-md">
+		<p>{{ $t('failed') }}</p>
 		<q-table v-bind:rows-per-page-options="[20]" v-bind:rows="rows" v-bind:columns="columns" row-key="id">
 			<template v-slot:top>
 				<div class="col-2 q-table__title">{{title}}</div>
