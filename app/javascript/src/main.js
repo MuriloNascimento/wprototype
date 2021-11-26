@@ -3,8 +3,6 @@ import { Quasar, Notify } from 'quasar'
 import components from './components/index'
 import 'quasar/dist/quasar.prod.css'
 import filters from './boot/filters'
-import { createI18n } from 'vue-i18n'
-import messages from './i18n'
 
 // cria um novo app vue
 // https://v3.vuejs.org/
