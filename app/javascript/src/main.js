@@ -16,9 +16,7 @@ app.use(Quasar, {
     }
 })
 
-// cria um store seguindo o padrão provide/inject
-// https://v3.vuejs.org/guide/composition-api-provide-inject.html
-// https://vuejsdevelopers.com/2020/10/05/composition-api-vuex/
+// cria um store de métodos seguindo o padrão provide/inject
 app.provide('store', reactive({}))
 
 // registra os filters
@@ -27,6 +25,4 @@ app.config.globalProperties.$filters = filters
 
 // cria uma instancia vue, para isolar o código Vue das demais bibliotecas javascript dentro do erp,
 // talvez seja necessária a criação de outras instancias, como por exemplo: const vmSideBar = app.mount('#vue-side-bar')
-document.addEventListener('DOMContentLoaded', () => {
-    const vmContent = app.mount('#vue-content')
-})
+const vmContent = app.mount('#vue-content')

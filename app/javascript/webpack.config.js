@@ -10,7 +10,7 @@ module.exports = {
 	},
 	output: {
 		path: path.join(__dirname, '../../public/javascripts'),
-		filename: 'main.js',
+		filename: '[name].js',
 		clean: true
 	},
 	module: {
@@ -30,14 +30,14 @@ module.exports = {
 				test: /\.(eot|ttf|woff|woff2)(\?\S*)?$/,
 				loader: "file-loader",
 				options: {
-					name: "../fonts/[name][contenthash:8].[ext]",
+					name: "../fonts/[name].[ext]",
 				},
 			},
 			{
 				test: /\.(png|jpe?g|gif|webm|mp4|svg)$/,
 				loader: "file-loader",
 				options: {
-					name: "[name][contenthash:8].[ext]",
+					name: "[name].[ext]",
 					outputPath: "assets/img",
 					esModule: false,
 				},

@@ -1,14 +1,30 @@
 export default {
     inject: ['store'],
+    data() {
+        return {
+            moduleName: "commons"
+        }
+    },
     methods: {
-        emit(name, args){
-            this.store[this.module][name](args)
+        emitInAnotherModule(moduleName, methodName, ...args) {
+            console.log(this.store)
+            if (typeof this.store[moduleName][methodName] == "function") {
+                this.store[moduleName][methodName](...args)
+            }
         },
-        save(name, action) {
-            this.store[this.module][name] = action
+        emitMethod(methodName, ...args){
+            if (typeof this.store[this.moduleName][methodName] == "function") {
+                this.store[this.moduleName][methodName](...args)
+            }
+        },
+        saveMethod(methodName, method) {
+            this.store[this.moduleName][methodName] = method
         }
     },
     mounted() {
-        this.store[this.module] = { ...this.store[this.module] }
+        if (typeof this.module != "undefined" && this.module != "") {
+            this.moduleName = this.module
+        }
+        this.store[this.moduleName] = { ...this.store[this.moduleName] }
     }
 }

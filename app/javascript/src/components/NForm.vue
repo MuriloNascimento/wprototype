@@ -52,9 +52,14 @@ export default {
 	methods: {
 		setError (message) {
 			this.error = message
+			this.$q.notify({
+				message: message,
+				type: 'negative',
+				position: 'top',
+				timeout: 2000
+			})
 		},
 		setSelected (selected) {
-			console.log(selected)
 			this.selected = selected
 			this.title = (typeof selected.id != undefined && selected.id != null) ? 'Edit' : 'New'
 			this.error = null
@@ -62,14 +67,14 @@ export default {
 		onSave () {
 			if (this.selected.id == undefined || this.selected.id == '' || this.selected.id == null) {
 				api.create(this.resource, this.selected).then( response => {
-					this.emit('insertRow', response.data.data)
+					this.emitMethod('insertRow', response.data.data)
 					this.setSelected({})
 				}).catch( error => {
 					this.setError(error.response.data.message)
 				})
 			} else {
 				api.update(this.resource, this.selected).then( response => {
-					this.emit('updateRow', this.selected)
+					this.emitMethod('updateRow', this.selected)
 					this.setSelected({})
 				}).catch( error => {
 					this.setError(error.response.data.message)
@@ -78,7 +83,7 @@ export default {
 		},
 		onDelete() {
 			api.delete(this.resource, this.selected.id).then( response => {
-				this.emit('deleteRow', this.selected)
+				this.emitMethod('deleteRow', this.selected)
 				this.setSelected({})
 			}).catch( error => {
 				this.setError(error.response.data.message)
@@ -86,7 +91,7 @@ export default {
 		}
 	},
 	mounted () {
-		this.save('setSelected', this.setSelected)
+		this.saveMethod('setSelected', this.setSelected)
 	},
 	created () {
 		this.setSelected({})

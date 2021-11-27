@@ -4,7 +4,7 @@
 			<template v-slot:top>
 				<div class="col-2 q-table__title">{{title}}</div>
 				<q-space />
-				<q-btn color="primary" round icon="add" v-on:click="this.emit('setSelected', {})"/>
+				<q-btn color="primary" round icon="add" v-on:click="this.emitMethod('setSelected', {})"/>
 			</template>
 			<template v-slot:header="props">
 				<q-tr :props="props">
@@ -13,7 +13,7 @@
 			</template>
 			<template v-slot:body="props">
 				<q-tr :props="props">
-					<q-td v-for="col in props.cols" v-bind:key="col.name" v-bind:props="props" v-on:click="this.emit('setSelected', {...props.row})" >
+					<q-td v-for="col in props.cols" v-bind:key="col.name" v-bind:props="props" v-on:click="this.emitMethod('setSelected', { ...props.row})" >
 						<span v-if="col.type === undefined">{{ col.value }}</span>
 						<span v-if="col.type === 'color'"><q-icon name="style" v-bind:style="{'color': `${col.value}`, 'font-size': '2em'}" /></span>
 					</q-td>
@@ -32,7 +32,7 @@ export default {
 	props: {
 		module: {
 			type: String,
-			required: true
+			required: false
 		},
 		resource: {
 			type: String,
@@ -71,9 +71,9 @@ export default {
 		}
 	},
 	mounted () {
-		this.save('insertRow', this.insertRow)
-		this.save('updateRow', this.updateRow)
-		this.save('deleteRow', this.deleteRow)
+		this.saveMethod('insertRow', this.insertRow)
+		this.saveMethod('updateRow', this.updateRow)
+		this.saveMethod('deleteRow', this.deleteRow)
 	},
 	created () {
 		this.setRows()
