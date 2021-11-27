@@ -4,7 +4,7 @@
 			<template v-slot:top>
 				<div class="col-2 q-table__title">{{title}}</div>
 				<q-space />
-				<q-btn color="primary" round icon="add" v-on:click="setSelected({})"/>
+				<q-btn color="primary" round icon="add" v-on:click="this.emit('setSelected', {})"/>
 			</template>
 			<template v-slot:header="props">
 				<q-tr :props="props">
@@ -13,7 +13,7 @@
 			</template>
 			<template v-slot:body="props">
 				<q-tr :props="props">
-					<q-td v-for="col in props.cols" v-bind:key="col.name" v-bind:props="props" v-on:click="setSelected({...props.row}, 'alo mundo')" >
+					<q-td v-for="col in props.cols" v-bind:key="col.name" v-bind:props="props" v-on:click="this.emit('setSelected', {...props.row})" >
 						<span v-if="col.type === undefined">{{ col.value }}</span>
 						<span v-if="col.type === 'color'"><q-icon name="style" v-bind:style="{'color': `${col.value}`, 'font-size': '2em'}" /></span>
 					</q-td>
@@ -24,11 +24,11 @@
 </template>
 
 <script>
-import { computed, onMounted, reactive } from 'vue'
-import api from '../services/api/commons'
-import { useStore } from '../composables/store'
+import api from '../services/commons'
+import store from '../mixins/store'
 
 export default {
+	mixins: [store],
 	props: {
 		module: {
 			type: String,
@@ -47,54 +47,36 @@ export default {
 			required: true
 		}
 	},
-	setup (props) {
-
-		// Instancia a composição store passando o módulo desse componente como parâmetro
-		const store = useStore(props.module)
-
-		// Busca no store, as ações necessárias para esse componente
-		const setSelected = store.get('setSelected')
-
-		// Atributos do componente
-		const state = reactive({
-			rows: []
-		})
-
-		// Ações que manipulam os atributos deste componente
-		const setRows = () => {
-			api.get(props.resource).then((response) => {
-				state.rows = response.data
-			})
-		}
-		const insertRow = itemSelected => {
-			state.rows.push(itemSelected)
-		}
-		const updateRow = itemSelected => {
-			const index = state.rows.findIndex(item => item.id === itemSelected.id)
-			state.rows.splice(index, 1, itemSelected)
-		}
-		const deleteRow = itemSelected => {
-			const index = state.rows.findIndex(item => item.id === itemSelected.id)
-			state.rows.splice(index, 1)
-		}
-
-		// Lifecycle hooks https://v3.vuejs.org/api/options-lifecycle-hooks.html
-		onMounted(() => {
-			setRows()
-		})
-
-		// adiciona novas ações no store (somente as ações que devem ser utilizadas em outros componentes)
-		store.save({
-			insertRow,
-			updateRow,
-			deleteRow
-		})
-
-		// Retorna os atributos e ações que devem ser utilizados no template
+	data() {
 		return {
-			rows: computed(() => state.rows),
-			setSelected
+			rows: []
 		}
+	},
+	methods: {
+		setRows() {
+			api.get(this.resource).then((response) => {
+				this.rows = response.data
+			})
+		},
+		insertRow(itemSelected) {
+			this.rows.push(itemSelected)
+		},
+		updateRow(itemSelected) {
+			const index = this.rows.findIndex(item => item.id === itemSelected.id)
+			this.rows.splice(index, 1, itemSelected)
+		},
+		deleteRow(itemSelected) {
+			const index = this.rows.findIndex(item => item.id === itemSelected.id)
+			this.rows.splice(index, 1)
+		}
+	},
+	mounted () {
+		this.save('insertRow', this.insertRow)
+		this.save('updateRow', this.updateRow)
+		this.save('deleteRow', this.deleteRow)
+	},
+	created () {
+		this.setRows()
 	}
 }
 </script>

@@ -23,12 +23,11 @@
 </template>
 
 <script>
-import { computed, onMounted, reactive } from 'vue'
-import api from '../services/api/commons'
-import { useStore } from '../composables/store'
-import { useQuasar } from 'quasar'
+import api from '../services/commons'
+import store from '../mixins/store'
 
 export default {
+	mixins: [store],
 	props: {
 		module: {
 			type: String,
@@ -43,85 +42,54 @@ export default {
 			required: true
 		}
 	},
-	setup (props) {
-
-		// Se for preciso utilizar alguma funcionalidade do dentro do setup: https://quasar.dev/options/the-q-object
-		const $q = useQuasar()
-
-		// Instancia a composição store passando o módulo desse componente como parâmetro
-		const store = useStore(props.module)
-
-		// Busca no store, as ações necessárias para esse componente
-		const insertRow = store.get('insertRow')
-		const updateRow = store.get('updateRow')
-		const deleteRow = store.get('deleteRow')
-
-		// Atributos
-		const state = reactive({
+	data() {
+		return {
 			selected: {},
 			title: null,
 			error: null
-		})
-
-		// Ações
-		const setError = message => {
-			state.error = message
-			$q.notify({
-				message: message,
-				type: 'negative',
-				position: 'top',
-				timeout: 2000
-			})
 		}
-		const setSelected = selected => {
-			state.selected = selected
-			state.title = (typeof selected.id != undefined && selected.id != null) ? 'Edit' : 'New'
-			state.error = null
-		}
-		const onSave = () => {
-			if (state.selected.id == undefined || state.selected.id == '' || state.selected.id == null) {
-				api.create(props.resource, state.selected).then( response => {
-					insertRow(response.data.data)
-					setSelected({})
+	},
+	methods: {
+		setError (message) {
+			this.error = message
+		},
+		setSelected (selected) {
+			console.log(selected)
+			this.selected = selected
+			this.title = (typeof selected.id != undefined && selected.id != null) ? 'Edit' : 'New'
+			this.error = null
+		},
+		onSave () {
+			if (this.selected.id == undefined || this.selected.id == '' || this.selected.id == null) {
+				api.create(this.resource, this.selected).then( response => {
+					this.emit('insertRow', response.data.data)
+					this.setSelected({})
 				}).catch( error => {
-					setError(error.response.data.message)
+					this.setError(error.response.data.message)
 				})
 			} else {
-				api.update(props.resource, state.selected).then( response => {
-					updateRow(state.selected)
-					setSelected({})
+				api.update(this.resource, this.selected).then( response => {
+					this.emit('updateRow', this.selected)
+					this.setSelected({})
 				}).catch( error => {
-					setError(error.response.data.message)
+					this.setError(error.response.data.message)
 				})
 			}
-		}
-		const onDelete = () => {
-			api.delete(props.resource, state.selected.id).then( response => {
-				deleteRow(state.selected)
-				setSelected({})
+		},
+		onDelete() {
+			api.delete(this.resource, this.selected.id).then( response => {
+				this.emit('deleteRow', this.selected)
+				this.setSelected({})
 			}).catch( error => {
-				setError(error.response.data.message)
+				this.setError(error.response.data.message)
 			})
 		}
-
-		// Lifecycle hooks https://v3.vuejs.org/api/options-lifecycle-hooks.html
-		onMounted(() => {
-			setSelected({})
-		})
-
-		// Adiciona novas ações no store (somente as ações que devem ser utilizadas em outros componentes)
-		store.save({
-			setSelected
-		})
-
-		// Retorna os atributos e ações que devem ser utilizados no template
-		return {
-			selected: computed(() => state.selected),
-			title: computed(() => state.title),
-			error: computed(() => state.error),
-			onDelete,
-			onSave
-		}
+	},
+	mounted () {
+		this.save('setSelected', this.setSelected)
+	},
+	created () {
+		this.setSelected({})
 	}
 }
 </script>

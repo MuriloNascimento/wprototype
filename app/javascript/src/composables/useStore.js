@@ -1,8 +1,11 @@
-import {inject} from 'vue'
+import { inject } from 'vue'
 
 export function useStore(module = 'commons') {
+
+    
     // injeta o objeto store
     const store = inject("store")
+    console.log(store)
 
     // Cria ou busca um módulo existente
     store[module] = { ...store[module] }

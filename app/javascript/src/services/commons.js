@@ -1,4 +1,4 @@
-import { axios } from '../../boot/axios'
+import axios from '../axios'
 
 export default {
 	get (resource, data = null) {
