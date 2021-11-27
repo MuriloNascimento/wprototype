@@ -1,18 +1,12 @@
 <div class="q-pa-md">
   <div class="row">
-    <div class="col-12 col-md-8">
-      <n-table title="itemType" resource="item_types" module="itemType" v-bind:columns="<%= ItemType::TABLE_COLUMNS %>">
-    </div>
-    <div class="col-12 col-md-4">
-      <n-form resource="item_types" module="itemType" v-bind:fields="<%= ItemType::FIELDS %>">
+    <div class="col-12 col-md-12">
+      <n-simple-table title="itemType" module="itemType" v-bind:visibleColumns="['name', 'color']"  v-bind:rows="<%= @item_types.to_json %>" v-bind:columns="<%= ItemType::TABLE_COLUMNS %>">
     </div>
   </div>
   <div class="row">
-    <div class="col-12 col-md-8">
-      <n-table title="item" resource="items" module="item" v-bind:columns="<%= Item::TABLE_COLUMNS %>">
-    </div>
-    <div class="col-12 col-md-4">
-      <n-form resource="items" module="item" v-bind:fields="<%= Item::FIELDS %>">
+    <div class="col-12 col-md-12">
+      <n-simple-table title="item" module="item" v-bind:visibleColumns="['name', 'item_type_id']" v-bind:rows="<%= @items.to_json %>" v-bind:columns="<%= Item::TABLE_COLUMNS %>">
     </div>
   </div>
 </div>
