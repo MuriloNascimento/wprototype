@@ -6,9 +6,4 @@ class ItemType < ApplicationRecord
         { name: 'name', label: 'Name', field: 'name', sortable: true, align: 'left'},
         { name: 'color', label: 'Color', field: 'color', sortable: true, align: 'left', type: 'color'}
     ].to_json
-
-    FIELDS = [
-        { name: 'name', label: 'Name', value: '', type: 'text'},
-        { name: 'color', label: 'Color', value: '', type: 'color'}
-    ].to_json
 end

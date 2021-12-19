@@ -1,18 +1,32 @@
 <div class="q-pa-md">
-  <div class="row">
-    <div class="col-12 col-md-6">
-      <n-table title="itemType" module="itemType" resource="item_types" v-bind:columns="<%= ItemType::TABLE_COLUMNS %>">
+	<div class="row">
+    	<div class="col-12 col-md-12">
+      		<n-table title="itemType" module="itemType" resource="item_types" v-bind:columns="<%= ItemType::TABLE_COLUMNS %>">
+    	</div>
     </div>
-    <div class="col-12 col-md-6">
-      <n-form title="itemType" module="itemType" resource="item_types" v-bind:fields="<%= ItemType::FIELDS %>">
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-12 col-md-6">
-      <n-table title="item" module="item" resource="items" v-bind:rows="<%= @items.to_json %>" v-bind:columns="<%= Item::TABLE_COLUMNS %>">
-    </div>
-    <div class="col-12 col-md-6">
-      <n-form title="item" module="item" resource="items" v-bind:rows="<%= @items.to_json %>" v-bind:fields="<%= Item::FIELDS %>">
-    </div>
-  </div>
+    <div class="row">
+    	<div class="col-12 col-md-12">
+      		<n-table title="item" module="item" resource="items" v-bind:columns="<%= Item::TABLE_COLUMNS %>">
+    	</div>
+  	</div>
 </div>
+<n-form title="ItemType" module="itemType" resource="item_types">
+	<template v-slot:body="data">
+		<div>
+			<q-input filled type="text" label="Name" v-model="data.selected.name" />
+		</div>
+		<div>
+			<q-color default-view="palette" label="Color" v-model="data.selected.color" />
+		</div>
+	</template>
+</n-form>
+<n-form title="Item" module="item" resource="items">
+	<template v-slot:body="data">
+		<div>
+			<q-input filled type="text" label="Name" v-model="data.selected.name" />
+		</div>
+		<div>
+			<q-select filled clearable emit-value map-options option-value="id" option-label="name" label="Item Type" v-model="data.selected.item_type_id" :options="<%= @item_types.to_json %>" />
+		</div>
+	</template>
+</n-form>

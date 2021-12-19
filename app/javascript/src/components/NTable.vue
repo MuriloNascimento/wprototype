@@ -20,15 +20,29 @@
 				</q-tr>
 			</template>
 		</q-table>
+		<q-dialog v-model="itemTypeForm">
+			<n-form title="ItemType" module="itemType" resource="item_types">
+				<template v-slot:body="data">
+					<div>
+						<q-input filled type="text" label="Name" v-model="data.selected.name" />
+					</div>
+					<div>
+						<q-color default-view="palette" label="Color" v-model="data.selected.color" />
+					</div>
+				</template>
+			</n-form>
+		</q-dialog>
 	</div>
 </template>
 
 <script>
 import api from '../services/commons'
 import store from '../mixins/store'
+import NForm from './NForm'
 
 export default {
 	mixins: [store],
+	components: {NForm},
 	props: {
 		module: {
 			type: String,
@@ -49,7 +63,8 @@ export default {
 	},
 	data() {
 		return {
-			rows: []
+			rows: [],
+			itemTypeForm: false
 		}
 	},
 	methods: {
